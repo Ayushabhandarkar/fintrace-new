@@ -1,8 +1,18 @@
 export type RootStackParamsList = {
   Home: undefined;
   Scanning: undefined;
-  AmountPage: {upiID: string; name: string};
-  QRScanner: undefined;
-  ConfirmPayment: {url: string};
   Transaction: undefined;
+  Event: undefined;
+  AllTransaction: {
+    type: String;
+  };
+  AddEvent: undefined;
 };
+
+export interface Transaction {
+  id: string;
+  name: string;
+  date: string;
+  amount: number;
+  icon: any;
+}

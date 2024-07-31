@@ -10,64 +10,57 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Layout from '../../layout/Layout';
-import {bg, transaction} from '../../utils/images';
+import {bg, transactionIcon} from '../../utils/images';
 import LinearGradient from 'react-native-linear-gradient';
 import TransactionComponent from '../../Components/TransactionComponent';
-
-interface Transaction {
-  id: string;
-  name: string;
-  date: string;
-  amount: number;
-  icon: any;
-}
+import SingleTransaction from '../../Components/SingleTransaction';
+import {Transaction} from '../../types';
 
 const transactions: Transaction[] = [
-  {id: '1', name: 'Upwork', date: 'Today', amount: 850, icon: transaction},
+  {id: '1', name: 'Upwork', date: 'Today', amount: 850, icon: transactionIcon},
   {
     id: '2',
     name: 'Transfer',
     date: 'Yesterday',
     amount: -85,
-    icon: transaction,
+    icon: transactionIcon,
   },
   {
     id: '3',
     name: 'Paypal',
     date: 'Jan 30, 2022',
     amount: 1406,
-    icon: transaction,
+    icon: transactionIcon,
   },
   {
     id: '4',
     name: 'Youtube',
     date: 'Jan 16, 2022',
     amount: -11.99,
-    icon: transaction,
+    icon: transactionIcon,
   },
   {
     id: '5',
     name: 'Youtube',
     date: 'Jan 16, 2022',
     amount: -11.99,
-    icon: transaction,
+    icon: transactionIcon,
   },
   {
     id: '6',
     name: 'Youtube',
     date: 'Jan 16, 2022',
     amount: -11.99,
-    icon: transaction,
+    icon: transactionIcon,
   },
   {
     id: '7',
     name: 'Youtube',
     date: 'Jan 16, 2022',
     amount: 30000,
-    icon: transaction,
+    icon: transactionIcon,
   },
 ];
-
 
 const {height} = Dimensions.get('window');
 const Home = () => {
@@ -102,7 +95,7 @@ const Home = () => {
           </View>
         </View>
       </View>
-      {/* <View style={styles.container}>
+      <View style={styles.homeContainer}>
         <View style={styles.transactionsContainer}>
           <View style={styles.transactionsHeader}>
             <Text style={styles.transactionsTitle}>Transactions History</Text>
@@ -112,50 +105,31 @@ const Home = () => {
           </View>
           <View
             style={{
-              height: 320,
+              height: 340,
               backgroundColor: 'white',
+              marginBottom: 55,
             }}>
             <ScrollView
               contentContainerStyle={{
+                marginTop: 20,
                 shadowColor: 'gray',
                 elevation: 2,
                 backgroundColor: 'white',
               }}>
               {transactions.map(transaction => (
-                <View key={transaction.id} style={styles.transactionItem}>
-                  <Image
-                    source={transaction.icon}
-                    style={styles.transactionIcon}
-                  />
-                  <View style={styles.transactionDetails}>
-                    <Text style={styles.transactionName}>
-                      {transaction.name}
-                    </Text>
-                    <Text style={styles.transactionDate}>
-                      {transaction.date}
-                    </Text>
-                  </View>
-                  <Text
-                    style={[
-                      styles.transactionAmount,
-                      {color: transaction.amount >= 0 ? 'green' : 'red'},
-                    ]}>
-                    {transaction.amount >= 0 ? '+' : '-'} ₹{' '}
-                    {Math.abs(transaction.amount).toFixed(2)}
-                  </Text>
-                </View>
+                <SingleTransaction transaction={transaction} />
               ))}
             </ScrollView>
           </View>
         </View>
-      </View> */}
-      <TransactionComponent />
+      </View>
+      {/* <TransactionComponent /> */}
     </Layout>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  homeContainer: {
     flex: 1,
     backgroundColor: 'white',
     zIndex: 2,

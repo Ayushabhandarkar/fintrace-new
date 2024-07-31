@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {
   Image,
   StyleSheet,
@@ -21,13 +21,7 @@ import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import Layout from '../../layout/Layout';
 import {bg} from '../../utils/images';
 import {Dropdown} from 'react-native-element-dropdown';
-import {
-  launchImageLibrary,
-  ImageLibraryOptions,
-  Asset,
-} from 'react-native-image-picker';
-// import TextRecognition from 'react-native-text-recognition';
-import RNFS from 'react-native-fs';
+import RadioGroup, {RadioButtonProps} from 'react-native-radio-buttons-group';
 
 type ScanningNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -50,7 +44,6 @@ const List = (type: any) => {
     </View>
   );
 };
-const eventEmitter = new NativeEventEmitter(NativeModules.ToastExample);
 
 const Scanning: React.FC = () => {
   const {navigate} = useNavigation<ScanningNavigationProp>();
@@ -59,11 +52,46 @@ const Scanning: React.FC = () => {
   const [description, setDescription] = useState('');
   const [upiId, setUpiId] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const [event, setEvent] = useState('');
+  const [event, setEvent] = useState('None');
   const [name, setName] = useState('');
-  const [imageUri, setImageUri] = useState<string | null>(null);
-  const [image, setImage] = useState(null);
-  // const [text, setText]
+  const [amount, setAmount] = useState<number | null>(null);
+  const [isSelected, setIsSelected] = useState('1');
+  const radioButtons: RadioButtonProps[] = useMemo(
+    () => [
+      {
+        id: '1',
+        label: 'Transaction',
+        value: 'transaction',
+        selected: true,
+        color: '#429690',
+        labelStyle: {
+          color: 'black',
+        },
+      },
+      {
+        id: '2',
+        label: 'Monthly payment',
+        value: 'monthly_payment',
+        selected: false,
+        color: '#429690',
+        labelStyle: {
+          color: 'black',
+        },
+      },
+      {
+        id: '3',
+        label: 'Income',
+        value: 'income',
+        selected: false,
+        color: '#429690',
+        labelStyle: {
+          color: 'black',
+        },
+      },
+    ],
+    [],
+  );
+
   const types = [
     {label: 'Travel', value: 'travel', color: '#F4BE37'},
     {label: 'Necessity', value: 'necessity', color: '#0D2535'},
@@ -71,114 +99,11 @@ const Scanning: React.FC = () => {
     {label: 'Entertainment', value: 'entertainment', color: '#FF9F40'},
   ];
 
-  useEffect(() => {
-    const subscription = eventEmitter.addListener('ImageShared', event => {
-      const {imageUri} = event;
-      // Handle the received image URI
-      console.log('Received image URI: ', imageUri);
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
   const events = [
     {label: 'Lonavala', value: 'lonavala'},
     {label: 'Pratham Visit', value: 'pratham visit'},
     {label: 'None', value: 'None'},
   ];
-  // useEffect(() => {
-  //   if (route.params?.imageUri) {
-  //     setImageUri(route.params.imageUri);
-  //   }
-  // }, [route.params?.imageUri]);
-
-  // useEffect(() => {
-  //   const options: ImageLibraryOptions = {
-  //     mediaType: 'photo', // valid values are 'photo', 'video', or 'mixed'
-  //     quality: 1,
-  //   };
-  //   12;
-
-  //   launchImageLibrary(options, response => {
-  //     console.log(response);
-  //     setImage(response);
-  //   });
-  // }, []);
-  // useEffect(() => {
-  //   if(image){
-  //     console.log(image)
-  //   }
-  //   console.log(imageUri);
-  // }, [image]);
-
-  const extractDetails = (text: any) => {
-    const amountPattern = /₹\s?\d+(\.\d{2})?/;
-    const payeePattern = /Paid to\s(.*)/;
-    const descriptionPattern = /Description:\s?(.*)/;
-
-    const amount = text.match(amountPattern)[0];
-    const payee = text.match(payeePattern)[1];
-    const description = text.match(descriptionPattern)[1];
-
-    return {amount, payee, description};
-  };
-  const handleUploadImage = async () => {
-    const options: ImageLibraryOptions = {
-      mediaType: 'photo',
-      quality: 1,
-    };
-
-    launchImageLibrary({mediaType: 'photo'}, async response => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorCode) {
-        console.log('ImagePicker Error: ', response.errorMessage);
-      } else if (response.assets && response.assets.length > 0) {
-        const selectedImage = response.assets[0];
-        setImageUri(selectedImage.uri);
-        console.log('Image selected: ', selectedImage.uri);
-        const base64Image = await RNFS.readFile(selectedImage.uri, 'base64');
-        const fileExtension = selectedImage.uri.split('.').pop();
-        const contentType = `image/${
-          fileExtension === 'jpg' ? 'jpeg' : fileExtension
-        }`;
-        const base64ImageWithContentType = `data:${contentType};base64,${base64Image}`;
-        getTextByUrl(base64ImageWithContentType);
-        getTextByUrl(base64Image);
-      }
-    });
-  };
-
-  const getTextByUrl = (base64: any) => {
-    // console.log(base64);
-    const url = 'https://api.ocr.space/parse/image';
-    const subscriptionKey = 'K84675454588957';
-    const data = new FormData();
-    data.append('apikey', subscriptionKey);
-    data.append('language', 'eng');
-    data.append('isOverlayRequired', 'true');
-    data.append('base64Image', base64);
-    data.append('OCREngine', '2');
-    console.log(url, ' the url is');
-    console.log('data : ', data);
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Cache-Control': 'no-cache',
-      },
-      body: data,
-    })
-      .then(response => response.json())
-      .then(responseJson => {
-        // console.log('OCR Response: ', responseJson);
-        // Alert.alert('OCR Response', JSON.stringify(responseJson));
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-  };
 
   const handleNext = () => {
     // console.log(upiId, ' upi id and name : ', name);
@@ -186,6 +111,11 @@ const Scanning: React.FC = () => {
     //   upiID: upiId,
     //   name: name,
     // });
+  };
+
+  const handleAmountChange = (text: string) => {
+    const numericValue = parseFloat(text);
+    setAmount(isNaN(numericValue) ? null : numericValue);
   };
 
   return (
@@ -245,6 +175,21 @@ const Scanning: React.FC = () => {
                 />
               </View>
               <View style={{marginTop: 20}}>
+                <Text style={styles.label}>Enter the name of the payee</Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    {borderColor: isFocused ? '#ccc' : '#E3E3E3'},
+                  ]}
+                  placeholder="example@ybl"
+                  placeholderTextColor={'#626262'}
+                  value={upiId}
+                  onChangeText={setUpiId}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                />
+              </View>
+              <View style={{marginTop: 20}}>
                 <Text style={styles.label}>Description</Text>
                 <TextInput
                   style={[
@@ -259,29 +204,38 @@ const Scanning: React.FC = () => {
                   onBlur={() => setIsFocused(false)}
                 />
               </View>
-              {/* <View
+              <View
                 style={{
                   marginTop: 20,
                 }}>
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={handleUploadImage}>
-                  <Text style={styles.buttonText}>Upload Image</Text>
-                </TouchableOpacity>
+                <RadioGroup
+                  radioButtons={radioButtons}
+                  onPress={setIsSelected}
+                  selectedId={isSelected}
+                  containerStyle={{
+                    alignItems: 'flex-start',
+                  }}
+                />
               </View>
-              {imageUri && (
-                <View style={{alignItems: 'center', marginTop: 20}}>
-                  <Image
-                    source={{uri: imageUri}}
-                    style={{width: 100, height: 100, borderRadius: 10}}
-                  />
-                </View>
-              )} */}
+              <View style={{marginTop: 20}}>
+                <Text style={styles.label}>Amount</Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    {borderColor: isFocused ? '#ccc' : '#E3E3E3'},
+                  ]}
+                  keyboardType="numeric"
+                  value={amount !== null ? amount.toString() : ''}
+                  onChangeText={handleAmountChange}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                />
+              </View>
               <View style={{marginVertical: 30, marginBottom: 70}}>
                 <TouchableOpacity
                   style={styles.buttonNext}
                   onPress={handleNext}>
-                  <Text style={styles.buttonText}>Next</Text>
+                  <Text style={styles.buttonText}>Submit</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -334,7 +288,7 @@ const styles = StyleSheet.create({
   dropdown: {
     padding: 10,
     borderRadius: 5,
-    marginBottom: 20,
+    // marginBottom: 20,
     borderWidth: 1,
     borderColor: '#E3E3E3',
   },

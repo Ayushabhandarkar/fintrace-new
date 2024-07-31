@@ -1,6 +1,13 @@
 import React from 'react';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
-import {AmountPage, ConfirmPayment, Home, Scanning, Transaction} from './screens';
+import {
+  AddEvent,
+  AllTransaction,
+  Event,
+  Home,
+  Scanning,
+  Transaction,
+} from './screens';
 import {RootStackParamsList} from './types';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -21,8 +28,8 @@ const App = () => {
           options={{headerShown: false}}
         />
         <Stack.Screen
-          name="ConfirmPayment"
-          component={ConfirmPayment}
+          name="Event"
+          component={Event}
           options={{headerShown: false}}
         />
         <Stack.Screen
@@ -31,8 +38,13 @@ const App = () => {
           options={{headerShown: false}}
         />
         <Stack.Screen
-          name="AmountPage"
-          component={AmountPage}
+          name="AllTransaction"
+          component={AllTransaction}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="AddEvent"
+          component={AddEvent}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
