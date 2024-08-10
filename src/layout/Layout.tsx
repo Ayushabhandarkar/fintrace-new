@@ -54,31 +54,20 @@ const Layout = ({children}: any) => {
                 name="house"
                 color={currentRouteName === 'Home' ? '#429690' : '#808080'}
                 size={20}
-                style={[
-                  styles.icon,
-                  {
-                    backgroundColor:
-                      currentRouteName === 'Home'
-                        ? '#ddd'
-                        : 'rgba(225,225,225,0.1)',
-                  },
-                ]}
+                style={[styles.icon]}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.iconWrapper} activeOpacity={0.7}>
+            <TouchableOpacity
+              style={styles.iconWrapper}
+              activeOpacity={0.7}
+              onPress={() => navigate('Investment')}>
               <MaterialCommunityIcons
                 name="google-analytics"
-                color={currentRouteName === 'Explore' ? '#429690' : '#808080'}
+                color={
+                  currentRouteName === 'Investment' ? '#429690' : '#808080'
+                }
                 size={20}
-                style={[
-                  styles.icon,
-                  {
-                    backgroundColor:
-                      currentRouteName === 'Explore'
-                        ? '#ddd'
-                        : 'rgba(225,225,225,0.1)',
-                  },
-                ]}
+                style={[styles.icon]}
               />
             </TouchableOpacity>
             <TouchableOpacity
@@ -102,15 +91,7 @@ const Layout = ({children}: any) => {
                   currentRouteName === 'Transaction' ? '#429690' : '#808080'
                 }
                 size={20}
-                style={[
-                  styles.icon,
-                  {
-                    backgroundColor:
-                      currentRouteName === 'Transaction'
-                        ? '#ddd'
-                        : 'rgba(225,225,225,0.1)',
-                  },
-                ]}
+                style={[styles.icon]}
               />
             </TouchableOpacity>
             <TouchableOpacity style={styles.iconWrapper} activeOpacity={0.7}>
@@ -118,15 +99,7 @@ const Layout = ({children}: any) => {
                 name="user"
                 color={currentRouteName === 'User' ? '#429690' : '#808080'}
                 size={20}
-                style={[
-                  styles.icon,
-                  {
-                    backgroundColor:
-                      currentRouteName === 'User'
-                        ? '#ddd'
-                        : 'rgba(225,225,225,0.1)',
-                  },
-                ]}
+                style={[styles.icon]}
               />
             </TouchableOpacity>
           </View>

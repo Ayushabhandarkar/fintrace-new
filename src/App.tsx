@@ -4,7 +4,9 @@ import {
   AddEvent,
   AllTransaction,
   Event,
+  FireCalculator,
   Home,
+  Investment,
   Scanning,
   Transaction,
 } from './screens';
@@ -45,6 +47,16 @@ const App = () => {
         <Stack.Screen
           name="AddEvent"
           component={AddEvent}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Investment"
+          component={Investment}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="FireCalculator"
+          component={FireCalculator}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
