@@ -14,8 +14,6 @@ import {RootStackParamsList, Transaction} from '../../types';
 import {Bills, transactions} from '../../utils/data';
 import SingleTransaction from '../../Components/SingleTransaction';
 import {RouteProp, useRoute} from '@react-navigation/native';
-// import IonIcons from 'react-native-vector-icons/Ionicons';
-// import Entypo from 'react-native-vector-icons/Entypo';
 
 const {width} = Dimensions.get('window');
 

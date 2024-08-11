@@ -5,8 +5,10 @@ import {
   AllTransaction,
   Event,
   FireCalculator,
+  GoalDetails,
   Home,
   Investment,
+  InvestmentDetails,
   Scanning,
   Transaction,
 } from './screens';
@@ -57,6 +59,16 @@ const App = () => {
         <Stack.Screen
           name="FireCalculator"
           component={FireCalculator}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="InvestmentDetails"
+          component={InvestmentDetails}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="GoalDetails"
+          component={GoalDetails}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

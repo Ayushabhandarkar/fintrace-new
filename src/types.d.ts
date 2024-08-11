@@ -9,6 +9,12 @@ export type RootStackParamsList = {
   AddEvent: undefined;
   Investment: undefined;
   FireCalculator: undefined;
+  InvestmentDetails: {
+    name: String;
+  };
+  GoalDetails: {
+    name: String;
+  };
 };
 
 export interface Transaction {

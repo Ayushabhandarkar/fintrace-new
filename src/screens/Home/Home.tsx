@@ -14,7 +14,11 @@ import {bg, transactionIcon} from '../../utils/images';
 import LinearGradient from 'react-native-linear-gradient';
 import TransactionComponent from '../../Components/TransactionComponent';
 import SingleTransaction from '../../Components/SingleTransaction';
-import {Transaction} from '../../types';
+import {RootStackParamsList, Transaction} from '../../types';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {useNavigation} from '@react-navigation/native';
+
+type HomeNavigationProp = StackNavigationProp<RootStackParamsList, 'Home'>;
 
 const transactions: Transaction[] = [
   {id: '1', name: 'Upwork', date: 'Today', amount: 850, icon: transactionIcon},
@@ -64,6 +68,7 @@ const transactions: Transaction[] = [
 
 const {height} = Dimensions.get('window');
 const Home = () => {
+  const {navigate} = useNavigation<HomeNavigationProp>();
   const totalBalance = 2548423.0;
   const income = 1840.0;
   const expenses = 284.0;
@@ -99,7 +104,13 @@ const Home = () => {
         <View style={styles.transactionsContainer}>
           <View style={styles.transactionsHeader}>
             <Text style={styles.transactionsTitle}>Transactions History</Text>
-            <TouchableOpacity activeOpacity={0.6}>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={() =>
+                navigate('AllTransaction', {
+                  type: 'all',
+                })
+              }>
               <Text style={styles.seeAllText}>See all</Text>
             </TouchableOpacity>
           </View>

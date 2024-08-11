@@ -4,7 +4,7 @@ import {pieChart} from '../utils/images';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamsList} from '../types';
 import {useNavigation} from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import {StackNavigationProp} from '@react-navigation/stack';
 
 type InvestmentNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -18,8 +18,6 @@ interface InvestmentProps {
   };
 }
 
-
-
 const InvestmentGoals: React.FC<InvestmentProps> = ({investmentGoal}) => {
   const {navigate} = useNavigation<InvestmentNavigationProp>();
 
@@ -27,8 +25,11 @@ const InvestmentGoals: React.FC<InvestmentProps> = ({investmentGoal}) => {
     <TouchableOpacity
       style={styles.investmentBox}
       activeOpacity={0.6}
-      onPress={() => navigate(investmentGoal.navigationTo)} // Updated to correctly call navigate
-    >
+      onPress={() =>
+        navigate('InvestmentDetails', {
+          name: investmentGoal.name,
+        })
+      }>
       <View>
         <Text style={styles.investmentText}>{investmentGoal.name}</Text>
       </View>
