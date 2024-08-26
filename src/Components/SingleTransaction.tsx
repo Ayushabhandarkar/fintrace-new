@@ -1,15 +1,45 @@
 import React from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {bg, transactionIcon} from '../utils/images';
+import {
+  bg,
+  transactionIcon,
+  travel,
+  food,
+  luxury,
+  comfort,
+  necessity,
+} from '../utils/images';
 
 function SingleTransaction(trans: any) {
   const {transaction} = trans;
+  const getIconForTransactionType = (type: string) => {
+    switch (type) {
+      case 'travel':
+        return travel;
+      case 'food':
+        return food;
+      case 'luxury':
+        return luxury;
+      case 'comfort':
+        return comfort;
+      case 'necessity':
+        return necessity;
+      case 'entertainment':
+        return necessity;
+      default:
+        return transactionIcon; // default icon if none of the above match
+    }
+  };
+
   return (
     <TouchableOpacity
       key={transaction.id}
       style={styles.transactionItem}
       activeOpacity={0.6}>
-      <Image source={transactionIcon} style={styles.transactionIcon} />
+      <Image
+        source={getIconForTransactionType(transaction.type)}
+        style={styles.transactionIcon}
+      />
       <View style={styles.transactionDetails}>
         <Text style={styles.transactionName}>{transaction.name}</Text>
         <Text style={styles.transactionDate}>{transaction.date}</Text>

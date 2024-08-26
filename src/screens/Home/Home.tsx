@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Dimensions,
   Touchable,
   TouchableOpacity,
+  FlatList,
 } from 'react-native';
 import Layout from '../../layout/Layout';
 import {bg, transactionIcon} from '../../utils/images';
@@ -17,69 +18,101 @@ import SingleTransaction from '../../Components/SingleTransaction';
 import {RootStackParamsList, Transaction} from '../../types';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useNavigation} from '@react-navigation/native';
+import {transactions} from '../../utils/data';
+import IonIcons from 'react-native-vector-icons/Ionicons';
+// import {useGetTransactionsQuery} from '../../store/apiSlice';
+import {fetchTransactionMessages} from '../../utils/SmsReader';
 
 type HomeNavigationProp = StackNavigationProp<RootStackParamsList, 'Home'>;
-
-const transactions: Transaction[] = [
-  {id: '1', name: 'Upwork', date: 'Today', amount: 850, icon: transactionIcon},
-  {
-    id: '2',
-    name: 'Transfer',
-    date: 'Yesterday',
-    amount: -85,
-    icon: transactionIcon,
-  },
-  {
-    id: '3',
-    name: 'Paypal',
-    date: 'Jan 30, 2022',
-    amount: 1406,
-    icon: transactionIcon,
-  },
-  {
-    id: '4',
-    name: 'Youtube',
-    date: 'Jan 16, 2022',
-    amount: -11.99,
-    icon: transactionIcon,
-  },
-  {
-    id: '5',
-    name: 'Youtube',
-    date: 'Jan 16, 2022',
-    amount: -11.99,
-    icon: transactionIcon,
-  },
-  {
-    id: '6',
-    name: 'Youtube',
-    date: 'Jan 16, 2022',
-    amount: -11.99,
-    icon: transactionIcon,
-  },
-  {
-    id: '7',
-    name: 'Youtube',
-    date: 'Jan 16, 2022',
-    amount: 30000,
-    icon: transactionIcon,
-  },
-];
 
 const {height} = Dimensions.get('window');
 const Home = () => {
   const {navigate} = useNavigation<HomeNavigationProp>();
-  const totalBalance = 2548423.0;
-  const income = 1840.0;
-  const expenses = 284.0;
+  const [totalBalance, setTotalBalance] = useState(2548423.0);
+  const [income, setIncome] = useState(1840.0);
+  const [expenses, setExpenses] = useState(284.0);
+  const [dayTime, setDayTime] = useState('Afternoon');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
+  const fetchAndProcessMessages = async () => {
+    try {
+      const smsRecords = await fetchTransactionMessages();
+      console.log(smsRecords); // Do something with the transactions
+    } catch (error: any) {
+      console.error('Error fetching SMS messages:', error.message);
+    }
+  };
+  // Call the query hook with dynamic parameters
+  // const {
+  //   data: transaction,
+  //   error,
+  //   isLoading,
+  // } = useGetTransactionsQuery({
+  //   page,
+  //   limit,
+  // });
+  // console
+  // transactionType: 'food', // Example filter, adjust as needed
+  const updateDayTime = () => {
+    const currentHour = new Date().getHours();
+    console.log(currentHour);
+    if (currentHour >= 5 && currentHour < 12) {
+      setDayTime('Morning');
+    } else if (currentHour >= 12 && currentHour < 17) {
+      setDayTime('Afternoon');
+    } else if (currentHour >= 17 && currentHour < 21) {
+      setDayTime('Evening');
+    } else {
+      setDayTime('Night');
+    }
+  };
+
+  // Update dayTime whenever the component mounts
+  useEffect(() => {
+    updateDayTime();
+    fetchAndProcessMessages();
+  }, []);
+
+  useEffect(() => {
+    const calculateBalances = () => {
+      let total = 0;
+      let incomeTotal = 0;
+      let expensesTotal = 0;
+
+      transactions.forEach((transaction: Transaction) => {
+        total += transaction.amount;
+
+        if (transaction.amount > 0) {
+          incomeTotal += transaction.amount;
+        } else {
+          expensesTotal += transaction.amount;
+        }
+      });
+
+      setTotalBalance(total);
+      setIncome(incomeTotal);
+      setExpenses(Math.abs(expensesTotal));
+    };
+
+    calculateBalances();
+  }, [transactions]);
+
+  const handleRefresh = async () => {};
+
+  // if (isLoading) {
+  //   return <Text>Loading...</Text>;
+  // }
+  // if(!isLoading){
+  //   console.log(transaction);
+  // }
   return (
     <Layout>
       <View style={{height: 247, marginTop: 0, zIndex: 20}}>
         <Image source={bg} style={styles.image} resizeMode="cover" />
       </View>
       <View style={styles.header}>
-        <Text style={styles.greeting}>Good afternoon,</Text>
+        <Text style={styles.greeting}>Good {dayTime},</Text>
         <Text style={styles.name}>Ayush Bhandarkar</Text>
       </View>
       <View style={styles.balanceCard}>
@@ -104,15 +137,30 @@ const Home = () => {
         <View style={styles.transactionsContainer}>
           <View style={styles.transactionsHeader}>
             <Text style={styles.transactionsTitle}>Transactions History</Text>
-            <TouchableOpacity
-              activeOpacity={0.6}
-              onPress={() =>
-                navigate('AllTransaction', {
-                  type: 'all',
-                })
-              }>
-              <Text style={styles.seeAllText}>See all</Text>
-            </TouchableOpacity>
+            <View
+              style={{
+                flexDirection: 'row',
+              }}>
+              <TouchableOpacity
+                activeOpacity={0.6}
+                style={{
+                  marginRight: 10,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                onPress={handleRefresh}>
+                <IonIcons size={18} color="#666666" name="refresh" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={() =>
+                  navigate('AllTransaction', {
+                    type: 'all',
+                  })
+                }>
+                <Text style={styles.seeAllText}>See all</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           <View
             style={{
@@ -126,6 +174,7 @@ const Home = () => {
                 shadowColor: 'gray',
                 elevation: 2,
                 backgroundColor: 'white',
+                paddingBottom: 20,
               }}>
               {transactions.map(transaction => (
                 <SingleTransaction transaction={transaction} />
@@ -168,7 +217,8 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   balanceCard: {
-    backgroundColor: '#2F7E79',
+    // backgroundColor: '#2F7E79',
+    backgroundColor: '#429690',
     borderRadius: 15,
     padding: 20,
     marginTop: 130,

@@ -19,7 +19,7 @@ const {height} = Dimensions.get('screen');
 function InvestmentDetails() {
   const route = useRoute<RouteProp<RootStackParamsList, 'InvestmentDetails'>>();
   const {name} = route.params;
-  console.log(name);
+//   console.log(name);
   return (
     <Layout>
       <View style={styles.imageContainer}>
@@ -55,7 +55,7 @@ function InvestmentDetails() {
               Add goal
             </Text>
           </TouchableOpacity>
-          <GoalComponent investmentGoal={{name: 'Watch', amount: 30000}} />
+          <GoalComponent investmentGoal={{name: 'Watch', amount: '30000'}} />
         </View>
       </View>
     </Layout>

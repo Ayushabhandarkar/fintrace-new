@@ -3124,6 +3124,7 @@ __metadata:
     react-native-element-dropdown: ^2.12.1
     react-native-fs: ^2.20.0
     react-native-gesture-handler: ^2.17.1
+    react-native-get-sms-android: ^2.1.0
     react-native-image-picker: ^7.1.2
     react-native-linear-gradient: ^2.8.3
     react-native-pager-view: ^6.3.3
@@ -8396,6 +8397,15 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 98529b672751d20ee470d368b64ceb8c829e66eb6d7c61724cd84500a76efec52c0b7d67a76ce3bac9bece1d7575ee3e9bb3c66044458ae2fd0ef3000e94e60b
+  languageName: node
+  linkType: hard
+
+"react-native-get-sms-android@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "react-native-get-sms-android@npm:2.1.0"
+  peerDependencies:
+    react-native: "*"
+  checksum: d74653e0ecac1f391d84305e1f4f56140e2042f7f3a5bb19a5cbf0ba2c77fee605c1b7b8636755390fb53b5c0ca8d50c41c8a7dd643d689e4a08540673608141
   languageName: node
   linkType: hard
 

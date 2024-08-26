@@ -19,8 +19,24 @@ export type RootStackParamsList = {
 
 export interface Transaction {
   id: string;
-  name: string;
-  date: string;
+  name: string; // Corresponds to payeeName in Mongoose schema
+  date: string; // Can represent the createdAt or updatedAt timestamps
   amount: number;
-  icon: any;
+  type:
+    | 'travel'
+    | 'necessity'
+    | 'food'
+    | 'entertainment'
+    | 'luxury'
+    | 'comfort'; // Updated types from the Mongoose schema
+  eventTypeId?: string | null; // Can be null or a string representing ObjectId
+  description?: string; // Optional field
+  transactionType: 'transaction' | 'monthly payment' | 'income'; // Updated types
+}
+
+export interface Events {
+  id: string;
+  name: string;
+  description: string;
+  eventDate: string;
 }

@@ -7,8 +7,8 @@ import {RootStackParamsList} from '../types';
 
 interface InvestmentProps {
   investmentGoal: {
-    name: String;
-    amount: String;
+    name: string;
+    amount: string;
   };
 }
 type GaolComponentNavigationProp = StackNavigationProp<RootStackParamsList>;
