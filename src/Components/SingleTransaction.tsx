@@ -10,7 +10,7 @@ import {
   necessity,
 } from '../utils/images';
 
-function SingleTransaction(trans: any) {
+function SingleTransaction(trans: any, index: any) {
   const {transaction} = trans;
   const getIconForTransactionType = (type: string) => {
     switch (type) {

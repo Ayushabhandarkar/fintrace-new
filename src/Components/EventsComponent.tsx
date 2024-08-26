@@ -56,7 +56,7 @@ function EventsComponent() {
             paddingBottom: 20,
           }}>
           {events.slice(0, 3).map(event => (
-            <EventComponent event={event} />
+            <EventComponent event={event} key={event.id} />
           ))}
         </ScrollView>
       </View>

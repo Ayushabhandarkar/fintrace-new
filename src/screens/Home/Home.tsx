@@ -177,7 +177,10 @@ const Home = () => {
                 paddingBottom: 20,
               }}>
               {transactions.map(transaction => (
-                <SingleTransaction transaction={transaction} />
+                <SingleTransaction
+                  transaction={transaction}
+                  key={transaction.id}
+                />
               ))}
             </ScrollView>
           </View>

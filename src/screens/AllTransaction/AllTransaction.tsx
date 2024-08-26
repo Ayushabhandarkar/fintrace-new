@@ -59,7 +59,7 @@ const TransactionsRoute = () => (
     </View> */}
     {transactions.map((trans: Transaction, index: number) => (
       <View key={index}>
-        <SingleTransaction transaction={trans} />
+        <SingleTransaction transaction={trans} key={trans.id} />
       </View>
     ))}
   </View>
@@ -69,7 +69,7 @@ const BillsRoute = () => (
   <View style={styles.scene}>
     {Bills.map((trans: Transaction, index: number) => (
       <View key={index}>
-        <SingleTransaction transaction={trans} />
+        <SingleTransaction transaction={trans} key={trans.id} />
       </View>
     ))}
   </View>

@@ -34,7 +34,7 @@ const TransactionComponent = () => {
           </TouchableOpacity>
         </View>
         <View>
-          {transactions.slice(0, 5).map(transaction => (
+          {transactions.slice(0, 5).map((transaction) => (
             <SingleTransaction key={transaction.id} transaction={transaction} />
           ))}
         </View>

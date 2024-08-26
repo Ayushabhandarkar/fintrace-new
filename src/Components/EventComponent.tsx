@@ -3,7 +3,7 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import { RootStackParamsList } from '../types';
+import {RootStackParamsList} from '../types';
 
 // Define the RootStackParamsList type if it's not already defined in a separate file
 // Define the type for the navigation prop
