@@ -111,31 +111,31 @@ const Investment = () => {
         <InvestmentGoals
           investmentGoal={{
             name: 'Short Term Goal (0.5 - 2 yr)',
-            navigationTo: 'Scanning',
+            navigationTo: 'Transaction',
           }}
         />
         <InvestmentGoals
           investmentGoal={{
             name: 'Medium Term Goal (3-5 yr)',
-            navigationTo: 'Scanning',
+            navigationTo: 'Transaction',
           }}
         />
         <InvestmentGoals
           investmentGoal={{
             name: 'Long Term Goal (5-10 yr)',
-            navigationTo: 'Scanning',
+            navigationTo: 'Transaction',
           }}
         />
         <InvestmentGoals
           investmentGoal={{
             name: 'Retirement',
-            navigationTo: 'Scanning',
+            navigationTo: 'Transaction',
           }}
         />
         <InvestmentGoals
           investmentGoal={{
             name: 'Emergency Funds',
-            navigationTo: 'Scanning',
+            navigationTo: 'Transaction',
           }}
         />
         <View style={{marginBottom: 30}} />

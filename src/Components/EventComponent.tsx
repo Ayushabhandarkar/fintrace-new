@@ -16,6 +16,7 @@ interface EventComponentProps {
   event: {
     name: string;
     amount: number;
+    mongoId: string;
   };
 }
 
@@ -29,6 +30,7 @@ const EventComponent: React.FC<EventComponentProps> = ({event}) => {
       onPress={() =>
         navigation.navigate('AllTransaction', {
           type: event.name,
+          mongoId: event.mongoId,
         })
       }>
       <View

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Dimensions,
   Image,
@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {RootStackParamsList} from '../../types';
+import {Events, RootStackParamsList} from '../../types';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Layout from '../../layout/Layout';
 import {bg, transactionIcon} from '../../utils/images';
@@ -18,7 +18,7 @@ import SingleTransaction from '../../Components/SingleTransaction';
 import PieChartComponent from '../../Components/PieChart';
 import EventComponent from '../../Components/EventComponent';
 import EventsComponent from '../../Components/EventsComponent';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 type TransactionNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -35,8 +35,106 @@ interface Transaction {
 
 const {width, height} = Dimensions.get('screen');
 const Transaction = () => {
+  const [transactions, setTransactions] = useState<Transaction[] | null>([]);
+  const [transData, setTransData] = useState([1, 1, 1, 1, 1, 1]);
+  const [eventsData, setEventsData] = useState<Events[] | null>([]);
+  const [eventTypeData, setEventTypeData] = useState<{[key: string]: number}>(
+    {},
+  );
+  const fetchEvents = async () => {
+    fetch('http://192.168.29.179:3000/events', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(data => {
+        // console.log('Success:', data);
+        const tempEvents: Events[] = data.map((event: any) => ({
+          mongoId: event._id,
+          name: event.description + ' ' + event.location,
+          amount: 0,
+        }));
+        setEventsData(tempEvents);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  };
+
+  const fetchTransactionData = async () => {
+    fetch('http://192.168.29.179:3000/transactions', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Assuming 'transactions' is the array containing the data
+        const transactions: Transaction[] = data.transactions.map(
+          (transaction: any) => ({
+            id: transaction._id,
+            name: transaction.payeeName,
+            date: transaction.createdAt,
+            amount: transaction.amount,
+            type: transaction.type,
+            eventTypeId: transaction.eventTypeId || null,
+            description: transaction.description,
+            transactionType: transaction.transactionType,
+          }),
+        );
+
+        const typeTotals: {[key: string]: number} = {
+          necessity: 0,
+          food: 0,
+          travel: 0,
+          entertainment: 0,
+          comfort: 0,
+          luxury: 0,
+        };
+        const eventTypeTotals: {[key: string]: number} = {};
+        // Accumulate sums for each transaction type
+        transactions.forEach((transaction: any) => {
+          if (transaction.transactionType === 'transaction') {
+            if (typeTotals.hasOwnProperty(transaction.type)) {
+              typeTotals[transaction.type] += transaction.amount;
+            }
+          }
+          // Summing by eventTypeId
+          if (transaction.eventTypeId) {
+            if (!eventTypeTotals[transaction.eventTypeId]) {
+              eventTypeTotals[transaction.eventTypeId] = 0;
+            }
+            eventTypeTotals[transaction.eventTypeId] += transaction.amount;
+          }
+        });
+        setEventTypeData(eventTypeTotals);
+        // console.log('Event Type Data:', eventTypeTotals);
+        // Creating an array in the desired order
+        const tempTransData = [
+          Math.abs(typeTotals['necessity']), // Necessity
+          Math.abs(typeTotals['food']), // Food
+          Math.abs(typeTotals['travel']), // Travel
+          Math.abs(typeTotals['entertainment']), // Entertainment
+          Math.abs(typeTotals['comfort']), // Comfort
+          Math.abs(typeTotals['luxury']), // Luxury
+        ];
+
+        // console.log('Data array:', tempTransData);
+        setTransactions(transactions);
+        setTransData(tempTransData);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  };
+  useEffect(() => {
+    fetchTransactionData();
+    fetchEvents();
+  }, []);
   const {navigate} = useNavigation<TransactionNavigationProp>();
-  const data = [10, 20, 30, 40];
   return (
     <Layout>
       <View>
@@ -61,10 +159,8 @@ const Transaction = () => {
                     justifyContent: 'space-evenly',
                     marginHorizontal: 20,
                   }}>
-                  <Text style={styles.metricsStyle}>
-                    Limit for Expense (in ₹)
-                  </Text>
-                  <Text style={styles.amountStyle}>10,000</Text>
+                  <Text style={styles.metricsStyle}>Amount spent on Food</Text>
+                  <Text style={styles.amountStyle}>₹ {transData[1]}</Text>
                 </View>
               </View>
               <View style={styles.horizontalMetrics}>
@@ -75,9 +171,9 @@ const Transaction = () => {
                     marginHorizontal: 20,
                   }}>
                   <Text style={styles.metricsStyle}>
-                    Limit for Expense (in ₹)
+                    Amount spent on Travel
                   </Text>
-                  <Text style={styles.amountStyle}>10,000</Text>
+                  <Text style={styles.amountStyle}>₹ {transData[2]}</Text>
                 </View>
               </View>
             </View>
@@ -95,9 +191,9 @@ const Transaction = () => {
                     marginHorizontal: 20,
                   }}>
                   <Text style={styles.metricsStyle}>
-                    Limit for Expense (in ₹)
+                    Amount spent on Necessity
                   </Text>
-                  <Text style={styles.amountStyle}>10,000</Text>
+                  <Text style={styles.amountStyle}>₹ {transData[0]}</Text>
                 </View>
               </View>
               <View style={styles.horizontalMetrics}>
@@ -108,21 +204,62 @@ const Transaction = () => {
                     marginHorizontal: 20,
                   }}>
                   <Text style={styles.metricsStyle}>
-                    Limit for Expense (in ₹)
+                    Amount spent on Luxury
                   </Text>
-                  <Text style={styles.amountStyle}>10,000</Text>
+                  <Text style={styles.amountStyle}>₹ {transData[5]}</Text>
                 </View>
               </View>
             </View>
-            <PieChartComponent data={data} />
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginHorizontal: 20,
+                marginTop: 20,
+              }}>
+              <View style={styles.horizontalMetrics}>
+                <View
+                  style={{
+                    height: '100%',
+                    justifyContent: 'space-evenly',
+                    marginHorizontal: 20,
+                  }}>
+                  <Text style={styles.metricsStyle}>
+                    Amount spent on Comfort
+                  </Text>
+                  <Text style={styles.amountStyle}>₹ {transData[4]}</Text>
+                </View>
+              </View>
+              <View style={styles.horizontalMetrics}>
+                <View
+                  style={{
+                    height: '100%',
+                    justifyContent: 'space-evenly',
+                    marginHorizontal: 20,
+                  }}>
+                  <Text style={styles.metricsStyle}>
+                    Amount spent on Entertainment
+                  </Text>
+                  <Text style={styles.amountStyle}>₹ {transData[3]}</Text>
+                </View>
+              </View>
+            </View>
+            <PieChartComponent data={transData} />
             <View
               style={{
                 marginVertical: 0,
               }}>
-              <TransactionComponent />
+              <TransactionComponent trans={transactions} />
             </View>
             <View>
-              <EventsComponent />
+              {/* <EventsComponent
+                eventsData={eventsData}
+                eventTypeData={eventTypeData}
+              /> */}
+              <EventsComponent
+                eventsData={eventsData}
+                eventTypeData={eventTypeData}
+              />
             </View>
           </View>
         </View>

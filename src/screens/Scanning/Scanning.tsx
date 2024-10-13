@@ -15,7 +15,7 @@ import {
   NativeEventEmitter,
   NativeModules,
 } from 'react-native';
-import {RootStackParamsList} from '../../types';
+import {Events, RootStackParamsList, Transaction} from '../../types';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import Layout from '../../layout/Layout';
@@ -48,6 +48,10 @@ const List = (type: any) => {
 const Scanning: React.FC = () => {
   const {navigate} = useNavigation<ScanningNavigationProp>();
   const route = useRoute<ScanningRouteProp>();
+
+  // Extract transactionId from route params (if editing an existing transaction)
+  const transactionId = route.params?.transactionId || null;
+  // console.log(transactionId);
   const [selectedType, setSelectedType] = useState('');
   const [description, setDescription] = useState('');
   const [upiId, setUpiId] = useState('');
@@ -56,6 +60,9 @@ const Scanning: React.FC = () => {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState<number | null>(null);
   const [isSelected, setIsSelected] = useState('1');
+  const [events, setEvents] = useState<Events[] | null>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const radioButtons: RadioButtonProps[] = useMemo(
     () => [
       {
@@ -97,22 +104,180 @@ const Scanning: React.FC = () => {
     {label: 'Necessity', value: 'necessity', color: '#0D2535'},
     {label: 'Food', value: 'food', color: '#5388D8'},
     {label: 'Entertainment', value: 'entertainment', color: '#FF9F40'},
+    {label: 'Luxury', value: 'luxury', color: 'purple'},
+    {label: 'Comfort', value: 'comfort', color: '#89CFF0'},
   ];
 
-  const events = [
-    {label: 'Lonavala', value: 'lonavala'},
-    {label: 'Pratham Visit', value: 'pratham visit'},
-    {label: 'None', value: 'None'},
-  ];
+  // const events = [
+  //   {label: 'Lonavala', value: 'lonavala'},
+  //   {label: 'Pratham Visit', value: 'pratham visit'},
+  //   {label: 'None', value: 'None'},
+  // ];
 
-  const handleNext = () => {
-    // console.log(upiId, ' upi id and name : ', name);
-    // navigate('AmountPage', {
-    //   upiID: upiId,
-    //   name: name,
-    // });
+  const fetchEvents = async () => {
+    fetch('http://192.168.29.179:3000/events', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Assuming 'transactions' is the array containing the data
+        const events: Events[] = data.map((event: any) => ({
+          value: event._id,
+          label: event.description,
+        }));
+
+        console.log(events);
+        setEvents(events); // Set the state with the mapped transactions
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
   };
+  // Update dayTime whenever the component mounts
+  useEffect(() => {
+    fetchEvents();
+    if (transactionId) {
+      console.log("Im in the useEffect loop" + transactionId);
+      fetchTransaction(transactionId); // Fetch the transaction details for editing
+    }
+  }, [transactionId]);
 
+  const fetchTransaction = async (id: string) => {
+    try {
+      const response = await fetch(
+        `http://192.168.29.179:3000/transactions/${id}`,
+      );
+      const data: Transaction = await response.json();
+
+      // Populate form fields with the fetched data
+      setSelectedType(data.type);
+      setEvent(data.eventTypeId || 'None');
+      setUpiId(data.payeeName);
+      setDescription(data.description || '');
+      setAmount(data.amount);
+      setIsSelected(
+        radioButtons.find(button => button.value === data.transactionType)
+          ?.id || '1',
+      );
+    } catch (error) {
+      console.error('Error fetching transaction:', error);
+    }
+  };
+  // const handleNext = () => {
+  //   // Validate the input values before sending the request
+  //   if (isSubmitting) {
+  //     return; // Do nothing if already submitting
+  //   }
+  //   if (!selectedType || !upiId || !description || !amount || !isSelected) {
+  //     Alert.alert('Error', 'Please fill all the fields before submitting.');
+  //     return;
+  //   }
+  //   setIsSubmitting(true);
+  //   // Set eventTypeId to null if no valid event is selected
+  //   const eventTypeId = event === 'None' ? null : event; // Add actual eventTypeId values
+
+  //   // Create the body of the request with the relevant variables
+  //   const requestBody = {
+  //     type: selectedType,
+  //     eventTypeId: eventTypeId, // Use ObjectId or null
+  //     payeeName: upiId,
+  //     description: description,
+  //     transactionType: radioButtons.find(button => button.id === isSelected)
+  //       ?.value,
+  //     amount:
+  //       radioButtons.find(button => button.id === isSelected)?.value ===
+  //         'transaction' || ''
+  //         ? -1 * amount
+  //         : amount,
+  //   };
+
+  //   // Perform the POST request
+  //   fetch('http://192.168.29.179:3000/transactions', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify(requestBody),
+  //   })
+  //     .then(response => response.json())
+  //     .then(data => {
+  //       console.log('Success:', data);
+  //       Alert.alert('Success', 'Transaction submitted successfully!');
+  //       navigate('Transaction');
+  //       setIsSubmitting(false);
+  //     })
+  //     .catch(error => {
+  //       console.error('Error:', error);
+  //       Alert.alert('Error', 'Failed to submit transaction.');
+  //       setIsSubmitting(false);
+  //     });
+  // };
+  const handleNext = () => {
+    if (isSubmitting) {
+      return; // Prevent double submission
+    }
+    if (!selectedType || !upiId || !description || !amount || !isSelected) {
+      Alert.alert('Error', 'Please fill all the fields before submitting.');
+      return;
+    }
+    setIsSubmitting(true);
+
+    // Set eventTypeId to null if no valid event is selected
+    const eventTypeId = event === 'None' ? null : event;
+
+    // Create the body of the request
+    const requestBody = {
+      type: selectedType,
+      eventTypeId,
+      payeeName: upiId,
+      description,
+      transactionType: radioButtons.find(button => button.id === isSelected)
+        ?.value,
+      amount:
+        radioButtons.find(button => button.id === isSelected)?.value ===
+        'transaction'
+          ? -1 * amount
+          : amount,
+    };
+
+    // Determine if it's a POST or PUT request
+    const url = transactionId
+      ? `http://192.168.29.179:3000/transactions/${transactionId}` // PUT request URL for editing
+      : 'http://192.168.29.179:3000/transactions'; // POST request URL for creating a new transaction
+    const method = transactionId ? 'PUT' : 'POST';
+
+    // Perform the request
+    fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+        Alert.alert(
+          'Success',
+          `Transaction ${
+            transactionId ? 'updated' : 'submitted'
+          } successfully!`,
+        );
+        navigate('Transaction'); // Navigate to the Transaction screen after submission
+        setIsSubmitting(false);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        Alert.alert(
+          'Error',
+          `Failed to ${transactionId ? 'update' : 'submit'} transaction.`,
+        );
+        setIsSubmitting(false);
+      });
+  };
   const handleAmountChange = (text: string) => {
     const numericValue = parseFloat(text);
     setAmount(isNaN(numericValue) ? null : numericValue);
@@ -233,9 +398,17 @@ const Scanning: React.FC = () => {
               </View>
               <View style={{marginVertical: 30, marginBottom: 70}}>
                 <TouchableOpacity
-                  style={styles.buttonNext}
-                  onPress={handleNext}>
-                  <Text style={styles.buttonText}>Submit</Text>
+                  // style={styles.buttonNext}
+                  style={[
+                    styles.buttonNext,
+                    isSubmitting && styles.disabledButtonNext,
+                  ]}
+                  onPress={handleNext}
+                  activeOpacity={0.8}
+                  disabled={isSubmitting}>
+                  <Text style={styles.buttonText}>
+                    {isSubmitting ? 'Submitting...' : 'Submit'}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -346,6 +519,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
     borderWidth: 2,
     borderColor: 'white',
+  },
+  disabledButtonNext: {
+    backgroundColor: '#B0B0B0', // Change color to indicate it's disabled
   },
   orContainer: {
     height: 40,

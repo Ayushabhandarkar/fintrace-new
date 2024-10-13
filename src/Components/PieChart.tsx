@@ -4,7 +4,14 @@ import PieChart from 'react-native-pie-chart';
 
 function PieChartComponent(stats: any) {
   const {data} = stats;
-  const colors = ['#0D2535', '#5388D8', '#F4BE37', '#FF9F40'];
+  const colors = [
+    '#0D2535',
+    '#5388D8',
+    '#F4BE37',
+    '#FF9F40',
+    '#08C2FF',
+    '#7E60BF',
+  ];
   return (
     <View style={styles.pieChartBox}>
       <View
@@ -24,7 +31,9 @@ function PieChartComponent(stats: any) {
           style={{
             height: '100%',
             padding: 10,
+            justifyContent: 'center',
             width: '50%',
+            alignItems: 'center',
           }}>
           <PieChart widthAndHeight={150} series={data} sliceColor={colors} />
         </View>
@@ -89,6 +98,36 @@ function PieChartComponent(stats: any) {
               Entertainment
             </Text>
           </View>
+          <View style={styles.pieChartDisplay}>
+            <View
+              style={[
+                styles.pieChartSingleMetric,
+                {backgroundColor: '#08C2FF'},
+              ]}
+            />
+            <Text
+              style={{
+                color: 'white',
+                paddingHorizontal: 6,
+              }}>
+              Comfort
+            </Text>
+          </View>
+          <View style={styles.pieChartDisplay}>
+            <View
+              style={[
+                styles.pieChartSingleMetric,
+                {backgroundColor: '#7E60BF'},
+              ]}
+            />
+            <Text
+              style={{
+                color: 'white',
+                paddingHorizontal: 6,
+              }}>
+              Luxury
+            </Text>
+          </View>
         </View>
       </View>
     </View>
@@ -97,7 +136,7 @@ function PieChartComponent(stats: any) {
 
 const styles = StyleSheet.create({
   pieChartBox: {
-    height: 206,
+    height: 256,
     width: '90%',
     backgroundColor: '#429690',
     marginHorizontal: 'auto',

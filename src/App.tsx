@@ -11,6 +11,7 @@ import {
   InvestmentDetails,
   Scanning,
   Transaction,
+  TransactionDetails,
 } from './screens';
 import {RootStackParamsList} from './types';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -69,6 +70,11 @@ const App = () => {
         <Stack.Screen
           name="GoalDetails"
           component={GoalDetails}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="TransactionDetails"
+          component={TransactionDetails}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

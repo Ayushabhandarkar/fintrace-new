@@ -9,10 +9,10 @@ import {
   Touchable,
   TouchableOpacity,
   FlatList,
+  Alert,
 } from 'react-native';
 import Layout from '../../layout/Layout';
 import {bg, transactionIcon} from '../../utils/images';
-import LinearGradient from 'react-native-linear-gradient';
 import TransactionComponent from '../../Components/TransactionComponent';
 import SingleTransaction from '../../Components/SingleTransaction';
 import {RootStackParamsList, Transaction} from '../../types';
@@ -34,29 +34,20 @@ const Home = () => {
   const [dayTime, setDayTime] = useState('Afternoon');
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-
+  const [trans, setTrans] = useState<Transaction[]>([]);
   const fetchAndProcessMessages = async () => {
     try {
       const smsRecords = await fetchTransactionMessages();
-      console.log(smsRecords); // Do something with the transactions
+      console.log(smsRecords);
+      // console.log(smsRecords); // Do something with the transactions
     } catch (error: any) {
       console.error('Error fetching SMS messages:', error.message);
     }
   };
-  // Call the query hook with dynamic parameters
-  // const {
-  //   data: transaction,
-  //   error,
-  //   isLoading,
-  // } = useGetTransactionsQuery({
-  //   page,
-  //   limit,
-  // });
-  // console
-  // transactionType: 'food', // Example filter, adjust as needed
+  
   const updateDayTime = () => {
     const currentHour = new Date().getHours();
-    console.log(currentHour);
+    // console.log(currentHour);
     if (currentHour >= 5 && currentHour < 12) {
       setDayTime('Morning');
     } else if (currentHour >= 12 && currentHour < 17) {
@@ -68,10 +59,42 @@ const Home = () => {
     }
   };
 
+  const fetchTransactions = async () => {
+    fetch('http://192.168.29.179:3000/transactions', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+
+        // Assuming 'transactions' is the array containing the data
+        const transactions: Transaction[] = data.transactions.map(
+          (transaction: any) => ({
+            id: transaction._id,
+            name: transaction.payeeName,
+            date: transaction.createdAt,
+            amount: transaction.amount,
+            type: transaction.type,
+            eventTypeId: transaction.eventTypeId || null,
+            description: transaction.description,
+            transactionType: transaction.transactionType,
+          }),
+        );
+
+        setTrans(transactions); // Set the state with the mapped transactions
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  };
   // Update dayTime whenever the component mounts
   useEffect(() => {
     updateDayTime();
     fetchAndProcessMessages();
+    fetchTransactions();
   }, []);
 
   useEffect(() => {
@@ -98,7 +121,11 @@ const Home = () => {
     calculateBalances();
   }, [transactions]);
 
-  const handleRefresh = async () => {};
+  const handleRefresh = async () => {
+    console.log('Refreshed');
+    // fetchAndProcessMessages();
+    fetchTransactions();
+  };
 
   // if (isLoading) {
   //   return <Text>Loading...</Text>;
@@ -156,6 +183,7 @@ const Home = () => {
                 onPress={() =>
                   navigate('AllTransaction', {
                     type: 'all',
+                    mongoId: null
                   })
                 }>
                 <Text style={styles.seeAllText}>See all</Text>
@@ -176,7 +204,7 @@ const Home = () => {
                 backgroundColor: 'white',
                 paddingBottom: 20,
               }}>
-              {transactions.map(transaction => (
+              {trans.map(transaction => (
                 <SingleTransaction
                   transaction={transaction}
                   key={transaction.id}

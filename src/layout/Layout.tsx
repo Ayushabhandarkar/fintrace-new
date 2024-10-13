@@ -16,7 +16,6 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamsList} from '../types';
 import {bg} from '../utils/images';
-import LinearGradient from 'react-native-linear-gradient';
 import Svg, {Path} from 'react-native-svg';
 
 type LayoutNavigationProp = StackNavigationProp<RootStackParamsList>;
@@ -73,7 +72,7 @@ const Layout = ({children}: any) => {
             <TouchableOpacity
               style={styles.iconWrapper}
               activeOpacity={0.7}
-              onPress={() => navigate('Scanning')}>
+              onPress={() => navigate('Scanning', {transaction: null})}>
               <FontAwesome6Icon
                 name="qrcode"
                 color={currentRouteName === 'Scanning' ? '#429690' : '#808080'}

@@ -41,8 +41,11 @@ export const fetchTransactionMessages = async () => {
         },
         (count, smsList) => {
           const messages = JSON.parse(smsList);
+          // console.log(messages, ' some');
           const transactions = messages
-            .map(message => processTransactionMessage(message.body))
+            .map(message =>
+              processTransactionMessage(message.body, message.time),
+            )
             .filter(msg => msg !== null);
           resolve(transactions);
         },
@@ -50,7 +53,7 @@ export const fetchTransactionMessages = async () => {
     });
   };
 
-  const processTransactionMessage = message => {
+  const processTransactionMessage = (message, time) => {
     const debitedRegex =
       /Sent Rs\.(\d+(?:\.\d{1,2})?) from Kotak Bank AC \w+ to (\S+) on (\d{2}-\d{2}-\d{2})/i;
     const creditedRegex =
@@ -68,6 +71,7 @@ export const fetchTransactionMessages = async () => {
         amount: match[1],
         upiId: match[2],
         date: match[3],
+        time: time,
       };
     } else if ((match = message.match(creditedRegex))) {
       return {
@@ -75,6 +79,7 @@ export const fetchTransactionMessages = async () => {
         amount: match[1],
         upiId: match[2],
         date: match[3],
+        time: time,
       };
     } else if ((match = message.match(dbDebitedRegex))) {
       return {
@@ -82,6 +87,7 @@ export const fetchTransactionMessages = async () => {
         amount: match[1],
         date: match[2],
         description: match[3],
+        time: time,
       };
     } else if ((match = message.match(dbCreditedRegex))) {
       return {
@@ -89,6 +95,7 @@ export const fetchTransactionMessages = async () => {
         amount: match[1],
         date: match[2],
         description: match[3],
+        time: time,
       };
     }
 

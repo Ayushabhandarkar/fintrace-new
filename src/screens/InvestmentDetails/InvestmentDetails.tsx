@@ -19,7 +19,7 @@ const {height} = Dimensions.get('screen');
 function InvestmentDetails() {
   const route = useRoute<RouteProp<RootStackParamsList, 'InvestmentDetails'>>();
   const {name} = route.params;
-//   console.log(name);
+
   return (
     <Layout>
       <View style={styles.imageContainer}>

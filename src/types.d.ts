@@ -1,22 +1,3 @@
-export type RootStackParamsList = {
-  Home: undefined;
-  Scanning: undefined;
-  Transaction: undefined;
-  Event: undefined;
-  AllTransaction: {
-    type: String;
-  };
-  AddEvent: undefined;
-  Investment: undefined;
-  FireCalculator: undefined;
-  InvestmentDetails: {
-    name: String;
-  };
-  GoalDetails: {
-    name: String;
-  };
-};
-
 export interface Transaction {
   id: string;
   name: string; // Corresponds to payeeName in Mongoose schema
@@ -36,7 +17,32 @@ export interface Transaction {
 
 export interface Events {
   id: string;
-  name: string;
+  location: string;
   description: string;
   eventDate: string;
 }
+
+export type RootStackParamsList = {
+  Home: undefined;
+  Scanning: {
+    transactionId: string | null;
+  };
+  Transaction: undefined;
+  Event: undefined;
+  AllTransaction: {
+    type: String;
+    mongoId: String | null;
+  };
+  AddEvent: undefined;
+  Investment: undefined;
+  FireCalculator: undefined;
+  InvestmentDetails: {
+    name: String;
+  };
+  GoalDetails: {
+    name: String;
+  };
+  TransactionDetails: {
+    transaction: Transaction;
+  };
+};

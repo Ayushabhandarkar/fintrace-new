@@ -8,9 +8,17 @@ import {
   luxury,
   comfort,
   necessity,
+  entertainment,
 } from '../utils/images';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParamsList} from '../types';
+import {useNavigation} from '@react-navigation/native';
+
+type TransactionDetailsNavigationProp =
+  StackNavigationProp<RootStackParamsList>;
 
 function SingleTransaction(trans: any, index: any) {
+  const {navigate} = useNavigation<TransactionDetailsNavigationProp>();
   const {transaction} = trans;
   const getIconForTransactionType = (type: string) => {
     switch (type) {
@@ -24,8 +32,8 @@ function SingleTransaction(trans: any, index: any) {
         return comfort;
       case 'necessity':
         return necessity;
-      case 'entertainment':
-        return necessity;
+    case 'entertainment':
+        return entertainment;
       default:
         return transactionIcon; // default icon if none of the above match
     }
@@ -35,7 +43,8 @@ function SingleTransaction(trans: any, index: any) {
     <TouchableOpacity
       key={transaction.id}
       style={styles.transactionItem}
-      activeOpacity={0.6}>
+      activeOpacity={0.6}
+      onPress={() => navigate('TransactionDetails', trans)}>
       <Image
         source={getIconForTransactionType(transaction.type)}
         style={styles.transactionIcon}

@@ -9,26 +9,26 @@ import {
 import EventComponent from './EventComponent';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {RootStackParamsList} from '../types';
+import {Events, RootStackParamsList} from '../types';
 
 const events = [
   {
-    id: '1',
+    mongoId: '1',
     name: 'Lonavala',
     amount: 3000,
   },
   {
-    id: '2',
+    mongoId: '2',
     name: 'Pratham Visit',
     amount: 6000,
   },
   {
-    id: '3',
+    mongoId: '3',
     name: 'Pune Travel',
     amount: 3000,
   },
   {
-    id: '4',
+    mongoId: '4',
     name: 'Ghar Groceries',
     amount: 3000,
   },
@@ -36,13 +36,27 @@ const events = [
 
 type TransactionNavigationProp = StackNavigationProp<RootStackParamsList>;
 
-function EventsComponent() {
+function EventsComponent({
+  eventsData,
+  eventTypeData,
+}: {
+  eventsData: Events[] | null;
+  eventTypeData: {[key: string]: number};
+}) {
+  if (!eventsData) {
+    return null;
+  }
+
+  console.log('Events data:', eventsData);
+  console.log('Event Type Data:', eventTypeData);
+
   const {navigate} = useNavigation<TransactionNavigationProp>();
+
   return (
     <View style={styles.outerEventcontainer}>
       <View style={styles.eventsContainer}>
         <View style={styles.eventsHeader}>
-          <Text style={styles.eventsTitle}>Events </Text>
+          <Text style={styles.eventsTitle}>Events</Text>
           <TouchableOpacity
             activeOpacity={0.6}
             onPress={() => navigate('Event')}>
@@ -55,9 +69,17 @@ function EventsComponent() {
             backgroundColor: 'white',
             paddingBottom: 20,
           }}>
-          {events.slice(0, 3).map(event => (
-            <EventComponent event={event} key={event.id} />
-          ))}
+          {eventsData.slice(0, 3).map((event: any) => {
+            // Get the amount from eventTypeData if it exists for this mongoId
+            const eventAmount = eventTypeData[event.mongoId] || 0;
+
+            return (
+              <EventComponent
+                event={{...event, amount: eventAmount}}
+                key={event.mongoId}
+              />
+            );
+          })}
         </ScrollView>
       </View>
     </View>

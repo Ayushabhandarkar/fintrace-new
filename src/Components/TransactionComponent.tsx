@@ -12,12 +12,14 @@ import {RootStackParamsList} from '../types';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useNavigation} from '@react-navigation/native';
 import {Transaction} from '../types';
-import {transactions} from '../utils/data';
+// import {transactions} from '../utils/data';
 type TransactionNavigationProp = StackNavigationProp<RootStackParamsList>;
 
-const TransactionComponent = () => {
+const TransactionComponent = (transaction : Transaction[] | null) => {
   const {navigate} = useNavigation<TransactionNavigationProp>();
-
+  // console.log(transaction);
+  const {trans} = transaction;
+  console.log(trans);
   return (
     <View style={styles.outerTransactionContainer}>
       <View style={styles.transactionsContainer}>
@@ -28,13 +30,14 @@ const TransactionComponent = () => {
             onPress={() =>
               navigate('AllTransaction', {
                 type: 'all',
+                mongoId: null
               })
             }>
             <Text style={styles.seeAllText}>See all</Text>
           </TouchableOpacity>
         </View>
         <View>
-          {transactions.slice(0, 5).map((transaction) => (
+          {trans?.slice(0, 5).map((transaction: any) => (
             <SingleTransaction key={transaction.id} transaction={transaction} />
           ))}
         </View>

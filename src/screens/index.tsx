@@ -9,3 +9,4 @@ export {default as Investment} from './Investment/Investment';
 export {default as FireCalculator} from './FireCalculator/FireCalculator';
 export {default as InvestmentDetails} from './InvestmentDetails/InvestmentDetails';
 export {default as GoalDetails} from './GoalDetails/GoalDetails';
+export {default as TransactionDetails} from './TransactionDetails/TransactionDetails';
